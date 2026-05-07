@@ -42,6 +42,7 @@ public class GmailService {
 
     public Boolean sendEmailContentAsPdfFile(String subject, String email) {
         try {
+            long startTime = System.nanoTime();
             // ** work with JavaMailSender
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -56,11 +57,16 @@ public class GmailService {
             // Add the byte array as an attachment
             messageHelper.addAttachment(keySet.get(0), new ByteArrayResource(pdfFile.get(keySet.get(0))));
             mailSender.send(mimeMessage);
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime);
+            long durationInMs = duration / 1000000;
+            log.debug("durationInMs => {}",durationInMs); // durationInMs => (about) 54244 if i use thread it will take (about) 23 because it's no need to wait response of mail
             return true;
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return false;
         }
+
     }
 
 }
